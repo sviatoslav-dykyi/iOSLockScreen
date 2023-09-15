@@ -5,9 +5,9 @@ import notifications from "../../assets/data/notifications";
 import NotificationItem from "./NotificationItem";
 import Animated, {
   useAnimatedScrollHandler,
-  withTiming,
-  withSpring,
   useSharedValue,
+  withSpring,
+  withTiming,
 } from "react-native-reanimated";
 
 const NotificationsList = ({
@@ -23,8 +23,10 @@ const NotificationsList = ({
     onScroll: (event) => {
       const y = event.contentOffset.y;
       scrollY.value = y;
+      //console.log("scrollY.value", scrollY.value);
+
       if (y < 10) {
-        // here we should have the footer opened
+        // тут ще футер має бути відкритим
         footerVisibility.value = withTiming(1);
       } else {
         // close the footer
@@ -37,7 +39,9 @@ const NotificationsList = ({
       }
     },
     onEndDrag: (event) => {
-      if (event.contentOffset.y < 0) {
+      const y = event.contentOffset.y;
+      //console.log("in onEndDrag", event.contentOffset.y);
+      if (y < 0) {
         listVisibility.value = withTiming(0);
       }
     },
@@ -57,7 +61,11 @@ const NotificationsList = ({
       )}
       {...flatListProps}
       onScroll={handler}
-      scrollEventThrottle={16}
+      // ми не хочемо щоби ця onScroll event викликалася більше ніж 60 разів за секунду
+      // ми хочемо мати 60 FPS анімацію. якщо буде більше 60 то це не покращить нічого
+      // більшість телефонів мають 60FPS refresh rate
+      // 1000мс / 60fps = 16      -- кожних 16 мс буде викликатися onScroll
+      scrollEventThrottle={16} // лімітуємо
     />
   );
 };

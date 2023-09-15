@@ -24,6 +24,9 @@ const NotificationItem = ({
   footerHeight,
 }) => {
   const { height } = useWindowDimensions();
+  // const containerHeight = height - 250 - footerHeight.value;
+  // не обновлятиме , потрібно зробити з нього devrived value
+
   const containerHeight = useDerivedValue(
     () => height - 250 - footerHeight.value
   );
@@ -35,7 +38,7 @@ const NotificationItem = ({
     const pos2 = startPosition + NOTIFICATION_HEIGHT - containerHeight.value;
 
     if (listVisibility.value >= 1) {
-      // we are animating the last visible item
+      // we are animating last visible iten
       return {
         opacity: interpolate(scrollY.value, [pos1, pos2], [0, 1]),
         transform: [
@@ -52,6 +55,8 @@ const NotificationItem = ({
               scrollY.value,
               [pos1, pos2],
               [0.8, 1],
+              // якщо значення інпута менше pos1 то output буде такий самий (0.8)
+              // якщо значення інпута більше pos2 то output буде такий самий (1)
               Extrapolate.CLAMP
             ),
           },
@@ -68,9 +73,7 @@ const NotificationItem = ({
               [containerHeight.value - startPosition, 0]
             ),
           },
-          {
-            scale: interpolate(listVisibility.value, [0, 1], [0.5, 1]),
-          },
+          { scale: interpolate(listVisibility.value, [0, 1], [0.5, 1]) },
         ],
         opacity: listVisibility.value,
       };
@@ -78,7 +81,7 @@ const NotificationItem = ({
   });
 
   return (
-    <Animated.View style={animatedStyle}>
+    <Animated.View style={[animatedStyle]}>
       <BlurView intensity={100} tint="dark" style={styles.container}>
         <Image source={data.icon} style={styles.icon} />
         <View style={{ flex: 1 }}>
